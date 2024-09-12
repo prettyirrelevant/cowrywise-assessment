@@ -4,6 +4,7 @@ from typing import Literal
 from collections.abc import Callable
 
 import pika
+import pika.exceptions
 from pika.exceptions import AMQPError, AMQPConnectionError
 
 from .types import (
@@ -82,17 +83,39 @@ class BookCourier:
 
     def _publish_event(self, event: LibraryMessage, queue: QueueName) -> None:
         """Publish an event to the specified RabbitMQ queue."""
-        self._ensure_connection()
-        try:
-            self.channel.basic_publish(
-                exchange='',
-                routing_key=self.queues[queue],
-                body=json.dumps(event),
-                properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE),
-            )
-            logger.info('Published event to %s: %s', self.queues[queue], event)
-        except AMQPError:
-            logger.exception('Failed to publish event')
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                self._ensure_connection()
+                if not self.channel or not self.channel.is_open:
+                    raise AMQPError('Channel is not open')  # noqa: TRY301, TRY003, EM101
+
+                self.channel.basic_publish(
+                    exchange='',
+                    routing_key=self.queues[queue],
+                    body=json.dumps(event),
+                    properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE),
+                )
+                logger.info('Published event to %s: %s', self.queues[queue], event)
+                return  # noqa: TRY300
+            except (AMQPError, pika.exceptions.StreamLostError):
+                logger.warning('Failed to publish event. Attempt %d of %d', attempt + 1, max_retries)
+                if attempt < max_retries - 1:
+                    self._reset_connection()
+                else:
+                    logger.exception('Failed to publish event after %d attempts', max_retries)
+                    raise
+
+    def _reset_connection(self) -> None:
+        """Reset the connection and channel."""
+        if self.connection:
+            try:
+                if self.connection.is_open:
+                    self.connection.close()
+            except Exception:
+                logger.exception('Error while closing connection')
+        self.connection = None
+        self.channel = None
 
     def consume_events(self, *, queue: QueueName, callback: Callable[[LibraryMessage], None]) -> None:
         """Consume events from the specified RabbitMQ queue."""

@@ -12,6 +12,9 @@ env:
   BOOKWORM_DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
   LIBRARIAN_RABBITMQ_URL: amqp://guest:guest@localhost:5672/
   BOOKWORM_RABBITMQ_URL: amqp://guest:guest@localhost:5672/
+  LIBRARIAN_SECRET_KEY: 'not-secret-enough'
+  BOOKWORM_SECRET_KEY: 'not-secret-enough'
+  PAGEKEEPER_SECRET_KEY:  'not-secret-enough'
 
 jobs:
   test:
