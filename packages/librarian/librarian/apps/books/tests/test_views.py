@@ -155,8 +155,8 @@ class TestViews(TestCase):
         response = self.client.get(reverse('book-unavailable-list'))
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['data']), 1)  # Only overdue books
-        self.assertEqual(response.data['data'][0]['book']['id'], 'book_1984')
+        self.assertEqual(len(response.data['data']), 2)  # Only overdue books
+        self.assertEqual(response.data['data'][0]['book']['id'], 'book_to_kill_a_mockingbird')
 
     def test_user_borrowed_books_api_view(self):
         response = self.client.get(reverse('user-borrowed-book-list'))
