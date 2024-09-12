@@ -1,0 +1,108 @@
+[project]
+name = "cowrywise-assessment"
+version = "0.1"
+dependencies = [
+    "pagekeeper",
+    "librarian",
+]
+requires-python = ">= 3.12"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.6.4",
+    "pytest>=8.3.2",
+    "pytest-sugar>=1.0.0",
+    "time-machine>=2.15.0",
+]
+
+[tool.uv.sources]
+librarian = { workspace = true }
+pagekeeper = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.ruff]
+include = ["packages/**/*.py"]
+line-length = 119
+
+[tool.ruff.format]
+quote-style = "single"
+docstring-code-format = true
+
+[tool.ruff.lint]
+exclude = ["**/protos/*.py"]
+select = [
+    "E",
+    "W",
+    "F",
+    "UP",
+    "B",
+    "SIM",
+    "I",
+    "N",
+    "ASYNC",
+    "S",
+    "BLE",
+    "FBT",
+    "A",
+    "COM",
+    "C4",
+    "DTZ",
+    "DJ",
+    "EM",
+    "EXE",
+    "ISC",
+    "ICN",
+    "LOG",
+    "G",
+    "INP",
+    "PIE",
+    "T20",
+    "PYI",
+    "PT",
+    "RSE",
+    "RET",
+    "SLF",
+    "TID",
+    "TCH",
+    "ARG",
+    "PTH",
+    "PL",
+    "TRY",
+    "FLY",
+    "PERF",
+    "FURB",
+    "RUF",
+]
+ignore = ["COM812", "ISC001", "DJ008", "PLR0913", "PLR2004", "RUF012", "ARG002"]
+
+[tool.ruff.lint.isort]
+length-sort = true
+combine-as-imports = true
+length-sort-straight = true
+section-order = ["future", "standard-library", "third-party","django", "restframework", "fastapi", "pagekeeper", "bookcourier", "librarian", "bookworm", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+"src" = ["src"]
+"pagekeeper" = ["pagekeeper"]
+"librarian" = ["librarian"]
+"bookcourier" = ["bookcourier"]
+"bookworm" = ["bookworm"]
+"django" = ["django"]
+"fastapi" = ["fastapi"]
+"restframework" = ["rest_framework", "drf_yasg"]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+
+[tool.ruff.lint.per-file-ignores]
+"**/test_**.py" = ["S101", "S105", "S106", "ANN201", "PT004", "FBT002"]
+"**/conftest.py" = ["S101", "S105", "S106", "ANN201", "PT004"]
+"**/server.py" = ["N802"]
+"**/librarian/**/test_**.py" = ["PT009", "PT027"]
+"**/bookworm/**/test_**.py" = ["PT009", "PT027"]
+
+
+[tool.pytest]
+testpaths = ["packages/pagekeeper"]

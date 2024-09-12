@@ -1,0 +1,16 @@
+{
+    "folders": [
+        {
+            "name": "bookworm",
+            "path": "bookworm"
+        },
+        {
+            "name": "librarian",
+            "path": "librarian"
+        },
+        {
+            "name": "pagekeeper",
+            "path": "pagekeeper"
+        }
+    ]
+}

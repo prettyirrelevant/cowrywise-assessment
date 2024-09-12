@@ -1,0 +1,27 @@
+[project]
+name = "pagekeeper"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyjwt>=2.9.0",
+    "argon2-cffi>=23.1.0",
+    "grpcio>=1.66.1",
+    "grpcio-tools>=1.66.1",
+    "pymongo>=4.8.0",
+    "environs>=11.0.0",
+    "shortuuid>=1.0.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.uv]
+dev-dependencies = []
+
+[tool.uv.sources]

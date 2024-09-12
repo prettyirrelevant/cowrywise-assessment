@@ -1,0 +1,131 @@
+services:
+  librarian:
+    command: make librarian-dev
+    build:
+      context: ./
+      dockerfile: ./infra/librarian.Dockerfile
+    volumes:
+      - librarian_data:/app
+    ports:
+      - "8084:8084"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      librarian_postgres:
+        condition: service_healthy
+    env_file: ".env"
+
+  librarian_consumer:
+    command: make librarian-consumer
+    build:
+      context: ./
+      dockerfile: ./infra/librarian.Dockerfile
+    volumes:
+      - librarian_data:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      librarian_postgres:
+        condition: service_healthy
+    env_file: ".env"
+
+  bookworm:
+    command: make bookworm-dev
+    build:
+      context: ./
+      dockerfile: ./infra/bookworm.Dockerfile
+    volumes:
+      - bookworm_data:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      bookworm_postgres:
+        condition: service_healthy
+    env_file: ".env"
+
+  bookworm_consumer:
+    command: make bookworm-consumer
+    build:
+      context: ./
+      dockerfile: ./infra/bookworm.Dockerfile
+    volumes:
+      - bookworm_data:/app
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      bookworm_postgres:
+        condition: service_healthy
+    env_file: ".env"
+
+  pagekeeper:
+    command: make pagekeeper-dev
+    build:
+      context: ./
+      dockerfile: ./infra/pagekeeper.Dockerfile
+    volumes:
+      - pagekeeper_data:/app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    env_file: ".env"
+
+  mongodb:
+    image: mongo:jammy
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      retries: 5
+      timeout: 5s
+      interval: 10s
+    volumes:
+      - mongodb_data:/data/db
+
+  librarian_postgres:
+    image: postgres:13-alpine
+    volumes:
+      - librarian_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -d librarian_db
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    environment:
+      - POSTGRES_DB=librarian_db
+      - POSTGRES_USER=librarian_user
+      - POSTGRES_PASSWORD=librarian_password
+
+  bookworm_postgres:
+    image: postgres:13-alpine
+    volumes:
+      - bookworm_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -d bookworm_db
+      retries: 3
+      timeout: 5s
+      interval: 10s
+    environment:
+      - POSTGRES_DB=bookworm_db
+      - POSTGRES_USER=bookworm_user
+      - POSTGRES_PASSWORD=bookworm_password
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      retries: 3
+      timeout: 30s
+      interval: 10s
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  mongodb_data:
+  bookworm_data:
+  rabbitmq_data:
+  librarian_data:
+  pagekeeper_data:
+  bookworm_postgres_data:
+  librarian_postgres_data:
