@@ -7,7 +7,10 @@ on:
     branches: [ main ]
 
 env:
+  PAGEKEEPER_PORT: 543215
   PAGEKEEPER_MONGODB_URL: mongodb://localhost:27017
+  LIBRARIAN_AUTHENTICATION_SERVER_URL: localhost:543215
+  BOOKWORM_AUTHENTICATION_SERVER_URL: localhost:543215
   LIBRARIAN_DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
   BOOKWORM_DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
   LIBRARIAN_RABBITMQ_URL: amqp://guest:guest@localhost:5672/
