@@ -6,13 +6,13 @@ ifneq (,$(wildcard ./.env.local))
 endif
 
 lint:
-	@ruff check
+	@uv run ruff check
 
 lint-fix:
-	@ruff check $(LINT_PATHS) --fix
+	@uv run ruff check $(LINT_PATHS) --fix
 
 format:
-	@ruff format $(LINT_PATHS)
+	@uv run ruff format $(LINT_PATHS)
 
 test-pagekeeper:
 	@echo "Running pagekeeper tests..."
