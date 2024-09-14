@@ -1,10 +1,6 @@
 [project]
 name = "cowrywise-assessment"
 version = "0.1"
-dependencies = [
-    "pagekeeper",
-    "librarian",
-]
 requires-python = ">= 3.12"
 
 [tool.uv]
@@ -14,10 +10,6 @@ dev-dependencies = [
     "pytest-sugar>=1.0.0",
     "time-machine>=2.15.0",
 ]
-
-[tool.uv.sources]
-librarian = { workspace = true }
-pagekeeper = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
